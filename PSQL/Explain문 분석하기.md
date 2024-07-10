@@ -94,7 +94,7 @@ DO $$
 END $$;
 ```
 
-- test table의 총 row는 1,000,000만 이다.
+- test table의 총 row는 1,000,000이다.
 - user는 0~99까지이다.
 - 각 user는 10,000개의 row를 생성했다.
 - created_at은 현재 날짜기준 + 1년 이내이다.

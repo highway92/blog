@@ -15,7 +15,7 @@ async function getSomething() {
 ---
 
 &nbsp;
-Node.js는 C++로 작성된 Javascript 런타임 환경이다. 그리고 Javascript는 Single Thread && 절대 블로킹 연상을 하지 않는다는 특성이 있다.
+Node.js는 C++로 작성된 Javascript 런타임 환경이다. 그리고 Javascript는 Single Thread 이며 절대 블로킹 연상을 하지 않는다는 특성이 있다.
 &nbsp;
 
 이것이 Node.js는 싱글 스레드다. 라고 불리는 이유이다.
@@ -25,22 +25,22 @@ Node.js는 C++로 작성된 Javascript 런타임 환경이다. 그리고 Javascr
 이글은 Node.js애서 코드가 어떻게 실행되는지에 대한 대략적인 설명이다. 따라서 비약이 많을 수 있다.
 
 ### libuv
-libuv는 Node.js에서 비동기 작업을 처리할 때 사용하는 라이브러리이다. 로컬에 있는 파일의 I/O, DB에 Record생성, 불러오기, API 호출등은 모두 외부와의 통신에 속한다. 즉 Node.js의 실행 프로세스 외부의 일이란 것이다.
+libuv는 Node.js에서 비동기 작업을 처리할 때 사용하는 라이브러리이다.  비동기 작업의 예시로는 파일 I/O, DB에 Record생성, 불러오기, API 호출 따위가 있다. 즉 Node.js의 실행 프로세스 외부의 일이란 것이다.
 
 libuv는 이런 부분들을 처리해준다. 즉 libuv는 비동기 작업을 위한 Node.js의 인터페이스라고도 할 수 있을 것 같다. 
 
 libuv는 운영체제(OS)에 작업을 요청하기도 하고, OS에서 지원하지 않는 작업 요청일 경우 libuv 내부의 Thread Pool에 작업을 요청한다.
 
-> "libuv 내부의 Thread Pool" 이라고 했는데, 이는 Node.js의 메인스레드를 이야기 하는 것이 아니다. 이 Thread Pool 덕분에 Node.js가 싱글 스레드 이지만 Non-blocking으로 비동기 작업들(Asynchronous) 작업들을 할 수 있다. 
+작업이 끝나면 그 결과를 Event Loop의 Queue에 적재한다.
 
-표현하기는 힘들지만 Node.js의 메인 스레드는 싱글 스레드가 맞다. 그리고 이 싱글 스레드가 이벤트 루프를 돌며 하나하나 작업들을 실행한다. 
+> "libuv 내부의 Thread Pool" 이라고 했는데, 이는 Node.js의 메인스레드를 이야기 하는 것이 아니다. 이 Thread Pool 덕분에 Node.js가 싱글 스레드 이지만 Non-blocking으로 비동기 작업들(Asynchronous) 작업들을 할 수 있다.
 
-그러나 이벤트 루프에 작업들(비동기 작업들)을 추가하고 작업이 완료된 비동기 task들을 추가하는 것은 libuv의 다른 Thread들 이다.
+즉 Node Js는 크게 메인 스레드 + libuv + Event Loop 로 이루어져있다.
 
 ### Event Loop
 *Event Loop는 자료구조나 어떤 구현체가 아니다. 6개의 Phase를 활용하는 방식이라고 생각하는 것이 편하다.*
 
-윗 문단에서 Event Loop에 task(실행해야할 코드 라고 생각하면 된다.)들을 추가 하는 것이 libuv가 하는 역할이라고 설명했다. 그렇다면 이제 우리의 메인 스레드가 Event Loop를 어떻게 활용하는지 살펴보자.
+윗 문단에서 Event Loop에 task(실행해야할 코드 라고 생각하면 된다.)들을 추가 하는 것이 libuv가 하는 역할이라고 설명했다. 이제 메인 스레드가 Event Loop를 어떻게 활용하는지 살펴보자.
 
 Event Loop는 6개의 Phase로 구성되어있고 다음과 같다.
 - Timer Phase
@@ -66,9 +66,10 @@ nextTickQueue와 microTaskQueue 역시도 Node.js가 비동기 Task를 처리하
 
 우선 가장 중요한 점은 nextTickQueue와 microTaskQueue는 Event Loop의 요소가 아니라는 점이다. (그러니까 아에 별개다)
 
-그리고 두 번째는 이 Queue들 역시도 Task를 담아뒀다가 메인 스레드가 가져다가 실행시키라고 있는 Queue들이다.
+두 번째는 이 Queue들 역시도 Task를 담아뒀다가 메인 스레드가 가져다가 실행시키라고 있는 Queue들이다.
 
-그리고 마지막으로는 이 Queue들의 Task는 메인 스레드가 언제 실행시키는가 인데 그건 아래와 같다.
+
+이 Queue들의 Task가 실행되는 순서는 아래와 같다.
 
 nextTickQueue :
 - process.nextTick() 함수에 의해 추가된 콜백을 관리한다.

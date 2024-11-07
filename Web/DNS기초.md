@@ -42,5 +42,34 @@ ex) www.domain.com. 은 FQDN이지만 www.domain.com은 그렇지 않다. (끝�
 2. Recursive DNS(또는 Cache DNS)
 타 호스트를 대신하여 질의된 DNS 데이터를 조회, 응답하는 네임서버이다.
 
+## DNS 질의과정
+```mermaid
+sequenceDiagram
+    participant Client as 클라이언트
+    participant Resolver as DNS 리졸버
+    participant Root as 루트 DNS 서버
+    participant TLD as TLD DNS 서버
+    participant Authoritative as 권한 있는 DNS 서버
+    
+    Client->>Resolver: 도메인 이름 질의 (예: www.example.com)
+    Resolver->>Root: 루트 DNS 서버에 질의
+    Root->>Resolver: 최상위 도메인(TLD) 서버 정보 반환
+    Resolver->>TLD: TLD 서버에 질의 (.com 등의 정보)
+    TLD->>Resolver: 해당 TLD의 권한 있는 DNS 서버 정보 반환
+    Resolver->>Authoritative: 권한 있는 DNS 서버에 질의 (example.com의 DNS 서버)
+    Authoritative->>Resolver: 도메인의 IP 주소 반환
+    Resolver->>Client: IP 주소 전달 (예: 192.0.2.1)
+```
+** DNS 리졸버 : client와 DNS간의 중개 역할을 하는 소프트 웨어를 뜻함.
+1. 클라이언트가 DNS질의를 시작
+2. 클라이언트가 DNS 리졸버에게 질의
+3. DNS 리졸버는 root DNS 서버에 질의
+4. root DNS서버는 최상위 도메인(TLD) 서버의 ip (hint)를 알려줌
+5. DNS 리졸버는 TLD DNS서버에 다시 질의
+6. TLD DNS서버는 해당 도메인의 Authoritative DNS 서버 정보를 반환함
+7. 리졸버는 Authoritative DNS서버에 최종적으로 질의함
+8. Authoritative 서버는 질의한 도메인의 ip를 반환
+9. DNS 리졸버는 해당 ip주소를 클라이언트에게 전달함
+
 
 

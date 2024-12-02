@@ -5,7 +5,7 @@ oracle 사용도 처음, mybatis사용도 처음이라 꽤나 시간을 허비�
 oracle에는 auto increment기능이 없기 때문에(적어도 내가 사용중인 버전엔) Trigger와 Sequence로 auto Increment를 구성했다.
 
 아래로는 
-insert 후 id를 return 받는 과정에 대한 설명이며 <selectKey>와 sequence의 nextval나 currval를 사용하는 방법은 아니다.
+insert 후 id를 return 받는 과정에 대한 설명이며 selectKey나 sequence의 nextval나 currval를 사용하는 방법은 아니다.
 개인적으로는 seq를 직접호출하는 것을 좋아하지 않기 때문에 아래와 같은 방법으로 진행했다.
 
 

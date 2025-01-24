@@ -28,7 +28,7 @@ Connection에는 Host 정보, Port 번호, 사용자 인증 정보, DB 이름과
 Oracle은 1000, SQL Server는 32,767, PostgreSQL은 100, MySQL은 151(버전에 따라 다를 수 있음)의 기본 Max Connection이 설정되어 있다. 그렇다면 우리는 이 설정을 그대로 사용해도 되느냐? 그렇게 해도 되지만, 어떻게 값을 설정해야 하는지 알아야 할 필요가 있다.
 
 ### Max Connection에 대한 오해
-이 부분에서 가장 충격을 받았던 사실은, 필자가 Max Connection이 높을수록 좋다고 생각했다는 것이다. Connection을 생성하고 유지하는 데는 컴퓨팅 리소스가 필요한데, 더 많은 CPU 코어를 가진 서버일수록 높은 Max Connection을 설정할 수 있고, 이게 DBMS 성능과 이어진다고 생각했기 때문이다.
+이 부분에서 가장 충격을 받았던 사실은, 필자가 Max Connection이 높을수록 좋다고 생각했다는 것이다. Connection을 생성하고 유지하는 데는 컴퓨팅 리소스가 필요한데, 더 높은 컴퓨팅 파워를 가진 서버일수록 높은 Max Connection을 설정할 수 있고, 이게 DBMS 성능과 이어진다고 생각했기 때문이다.
 
 하지만 여기에는 한 가지 간과된 사실이 있다. 바로 Connection을 추가하고 해제하는 비용이 생각보다 크다는 점이다. 따라서 Max Connection이 적게 설정되어 있어도 적절히 설정되어 있다면, 더 높은 성능을 발휘할 수 있다.
 (자세한 설명은 참조 블로그의 What limits the maximum number of connections? 부분을 살펴보자.)

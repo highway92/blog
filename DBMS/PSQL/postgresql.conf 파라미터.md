@@ -1,8 +1,9 @@
 # 들어가기 앞서
 postgresql을 optimizing하기 위해선 테스트와 파라미터 튜닝이 필요하다. postgresql.conf의 기본값들은 어떠한 환경에서도 무난하게 실행될 수 있도록 구성되어져 있기 때문이다.
-아래 글에서는 성능에 영향을 주는 파라미터들과 pgbench를 이용해서 테스트를 진행하는 방법을 다룬다.
 
-[참조 블로그1](https://vladmihalcea.com/postgresql-performance-tuning-settings/)
+
+[참조 블로그1](https://vladmihalcea.com/postgresql-performance-tuning-settings/) 
+
 [참조 블로그2](https://www.enterprisedb.com/postgres-tutorials/comprehensive-guide-how-tune-database-parameters-and-configuration-postgresql)
 
 
@@ -28,14 +29,16 @@ postgresql을 optimizing하기 위해선 테스트와 파라미터 튜닝이 필
 ### wal_buffers
 역할 : 트랜잭션 로그(Write-Ahead Log)를 디스크에 기록하기 전에 메모리에 임시 저장하는 버퍼 크기
 - WAL로그는 psql의 데이터 무결성과 복구를 위한 핵심 요소이다.
-설정 권장 : shared_buffersdml 1/32 크기로 설정
+- default는 -1, 자동으로 메모리 크기를 shared_buffers의 3%로 설정한다.
+설정 권장 : shared_buffers의 1/32 크기로 설정
 
 ### maintenance_work_mem
 역할 : 인덱스 재작성, VACUUM, CREATE INDEX, ANALYZE, ALTER TABLE FOREIGN KEY 같은 유지보수 작업에서 사용할 수 있는 메모리 크기
 설정권장 : 작업 빈도와 데이터베이스 크기를 고려해 기본값(64MB)에서 시작하고, VACUUM이나 인덱스 생성 작업이 느리다면 점차 값을 높여 테스트하는 것이 좋다.
 
 ### effective_cache_size
-역할 : 데이터 베이스 서버가 디스크 데이터를 캐시하기 위해 사용할 수 있는 전체 메모리 크기 참조값 
+역할 : 데이터 베이스 서버가 디스크 데이터를 캐시하기 위해 사용할 수 있는 전체 메모리 크기 참조값
+- default는 4GB 
 - 이는 postgresql이 관리하는 shared_buffer + OS의 파일 시스템 캐시 입니다.
 - postgresql에 쿼리 실행을 요청하면 쿼리 플래너가 각종 값들을 바탕으로 Sequential Scan을 할지 index Scan을 할지 실행계획을 세우게 되는데 이때 참조하게 되는 값이다.
 - effective_cache_size 값이 크면 인덱스를 사용하는 계획을 선호 / 값이 작으면 Sequential Scan을 선호하게 된다.
@@ -44,6 +47,7 @@ postgresql을 optimizing하기 위해선 테스트와 파라미터 튜닝이 필
 
 ### effective_io_concurrency
 역할 : 데이터베이스에서 디스크 I/O 작업을 동시에 수행할 수 있는 작업의 최대 값을 설정하는 파라미터
+- default는 1
 - 0으로 되어있을 경우 작업을 병렬처리 하지않는다. (하드디스크 처럼 디스크 성능이 낮거나 여러 I/O 작업을 수행 할 수 없는경우)
 - 1 이상의 정수 : 설정된 값만큼 병렬로 처리 (SSD의 경우 200으로 설정해서 테스트를 통해 적절한 값을 찾는다.)
 
